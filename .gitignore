@@ -24,13 +24,7 @@ env/
 ENV/
 
 # Данные
-data/raw_videos/*
-data/audio_wav/*
-data/transcripts/*
-data/segments/*
-data/features/*
-data/models/*
-data/results/*
+
 !data/.gitkeep
 !data/metadata.csv.example
 

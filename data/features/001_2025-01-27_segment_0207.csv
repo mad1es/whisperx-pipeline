@@ -1,0 +1,99 @@
+@relation openSMILE_features
+
+@attribute name string
+@attribute F0semitoneFrom27.5Hz_sma3nz_amean numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_stddevNorm numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_percentile20.0 numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_percentile50.0 numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_percentile80.0 numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_pctlrange0-2 numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_meanRisingSlope numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_stddevRisingSlope numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_meanFallingSlope numeric
+@attribute F0semitoneFrom27.5Hz_sma3nz_stddevFallingSlope numeric
+@attribute loudness_sma3_amean numeric
+@attribute loudness_sma3_stddevNorm numeric
+@attribute loudness_sma3_percentile20.0 numeric
+@attribute loudness_sma3_percentile50.0 numeric
+@attribute loudness_sma3_percentile80.0 numeric
+@attribute loudness_sma3_pctlrange0-2 numeric
+@attribute loudness_sma3_meanRisingSlope numeric
+@attribute loudness_sma3_stddevRisingSlope numeric
+@attribute loudness_sma3_meanFallingSlope numeric
+@attribute loudness_sma3_stddevFallingSlope numeric
+@attribute spectralFlux_sma3_amean numeric
+@attribute spectralFlux_sma3_stddevNorm numeric
+@attribute mfcc1_sma3_amean numeric
+@attribute mfcc1_sma3_stddevNorm numeric
+@attribute mfcc2_sma3_amean numeric
+@attribute mfcc2_sma3_stddevNorm numeric
+@attribute mfcc3_sma3_amean numeric
+@attribute mfcc3_sma3_stddevNorm numeric
+@attribute mfcc4_sma3_amean numeric
+@attribute mfcc4_sma3_stddevNorm numeric
+@attribute jitterLocal_sma3nz_amean numeric
+@attribute jitterLocal_sma3nz_stddevNorm numeric
+@attribute shimmerLocaldB_sma3nz_amean numeric
+@attribute shimmerLocaldB_sma3nz_stddevNorm numeric
+@attribute HNRdBACF_sma3nz_amean numeric
+@attribute HNRdBACF_sma3nz_stddevNorm numeric
+@attribute logRelF0-H1-H2_sma3nz_amean numeric
+@attribute logRelF0-H1-H2_sma3nz_stddevNorm numeric
+@attribute logRelF0-H1-A3_sma3nz_amean numeric
+@attribute logRelF0-H1-A3_sma3nz_stddevNorm numeric
+@attribute F1frequency_sma3nz_amean numeric
+@attribute F1frequency_sma3nz_stddevNorm numeric
+@attribute F1bandwidth_sma3nz_amean numeric
+@attribute F1bandwidth_sma3nz_stddevNorm numeric
+@attribute F1amplitudeLogRelF0_sma3nz_amean numeric
+@attribute F1amplitudeLogRelF0_sma3nz_stddevNorm numeric
+@attribute F2frequency_sma3nz_amean numeric
+@attribute F2frequency_sma3nz_stddevNorm numeric
+@attribute F2bandwidth_sma3nz_amean numeric
+@attribute F2bandwidth_sma3nz_stddevNorm numeric
+@attribute F2amplitudeLogRelF0_sma3nz_amean numeric
+@attribute F2amplitudeLogRelF0_sma3nz_stddevNorm numeric
+@attribute F3frequency_sma3nz_amean numeric
+@attribute F3frequency_sma3nz_stddevNorm numeric
+@attribute F3bandwidth_sma3nz_amean numeric
+@attribute F3bandwidth_sma3nz_stddevNorm numeric
+@attribute F3amplitudeLogRelF0_sma3nz_amean numeric
+@attribute F3amplitudeLogRelF0_sma3nz_stddevNorm numeric
+@attribute alphaRatioV_sma3nz_amean numeric
+@attribute alphaRatioV_sma3nz_stddevNorm numeric
+@attribute hammarbergIndexV_sma3nz_amean numeric
+@attribute hammarbergIndexV_sma3nz_stddevNorm numeric
+@attribute slopeV0-500_sma3nz_amean numeric
+@attribute slopeV0-500_sma3nz_stddevNorm numeric
+@attribute slopeV500-1500_sma3nz_amean numeric
+@attribute slopeV500-1500_sma3nz_stddevNorm numeric
+@attribute spectralFluxV_sma3nz_amean numeric
+@attribute spectralFluxV_sma3nz_stddevNorm numeric
+@attribute mfcc1V_sma3nz_amean numeric
+@attribute mfcc1V_sma3nz_stddevNorm numeric
+@attribute mfcc2V_sma3nz_amean numeric
+@attribute mfcc2V_sma3nz_stddevNorm numeric
+@attribute mfcc3V_sma3nz_amean numeric
+@attribute mfcc3V_sma3nz_stddevNorm numeric
+@attribute mfcc4V_sma3nz_amean numeric
+@attribute mfcc4V_sma3nz_stddevNorm numeric
+@attribute alphaRatioUV_sma3nz_amean numeric
+@attribute hammarbergIndexUV_sma3nz_amean numeric
+@attribute slopeUV0-500_sma3nz_amean numeric
+@attribute slopeUV500-1500_sma3nz_amean numeric
+@attribute spectralFluxUV_sma3nz_amean numeric
+@attribute loudnessPeaksPerSec numeric
+@attribute VoicedSegmentsPerSec numeric
+@attribute MeanVoicedSegmentLengthSec numeric
+@attribute StddevVoicedSegmentLengthSec numeric
+@attribute MeanUnvoicedSegmentLength numeric
+@attribute StddevUnvoicedSegmentLength numeric
+@attribute equivalentSoundLevel_dBp numeric
+@attribute class numeric
+
+@data
+
+unknown,3.445497e+01,5.989173e-02,3.306884e+01,3.389921e+01,3.580817e+01,2.739330e+00,8.241500e+01,1.195640e+02,5.913225e+00,1.320743e+01,8.488116e-01,2.533389e-01,6.662719e-01,8.738081e-01,1.002437e+00,3.361651e-01,6.779277e+00,3.781032e+00,8.917116e+00,3.911702e+00,3.326702e-01,6.811721e-01,4.193222e+01,3.172541e-01,9.693141e-01,1.430235e+01,4.097170e+00,4.313188e+00,-1.288585e+01,-9.307883e-01,1.315202e-02,1.415130e+00,6.717782e-01,1.138259e+00,1.002951e+01,2.703550e-01,5.739873e+00,1.406547e+00,3.104280e+01,2.783041e-01,7.075132e+02,2.414473e-01,1.429958e+03,1.395211e-01,-3.568271e+01,-1.794697e+00,1.839275e+03,1.482201e-01,1.036255e+03,3.347320e-01,-4.683152e+01,-1.226352e+00,2.837672e+03,9.110841e-02,1.052301e+03,2.807084e-01,-5.161711e+01,-1.076534e+00,-1.996124e+01,-2.963074e-01,2.964302e+01,2.397756e-01,7.468916e-02,2.169934e-01,-3.844604e-02,-2.844612e-01,3.404177e-01,6.877217e-01,4.499383e+01,2.072440e-01,-6.551383e-02,-2.191212e+02,5.764423e+00,3.167508e+00,-1.430993e+01,-8.506202e-01,-1.034989e+01,1.805410e+01,7.221249e-02,-2.382127e-02,2.827048e-01,4.590164e+00,2.006689e+00,4.216667e-01,4.870118e-01,7.000000e-02,5.059644e-02,-1.938778e+01,?
+unknown,3.445497e+01,5.989173e-02,3.306884e+01,3.389921e+01,3.580817e+01,2.739330e+00,8.241500e+01,1.195640e+02,5.913225e+00,1.320743e+01,8.488116e-01,2.533389e-01,6.662719e-01,8.738081e-01,1.002437e+00,3.361651e-01,6.779277e+00,3.781032e+00,8.917116e+00,3.911702e+00,3.326702e-01,6.811721e-01,4.193222e+01,3.172541e-01,9.693141e-01,1.430235e+01,4.097170e+00,4.313188e+00,-1.288585e+01,-9.307883e-01,1.315202e-02,1.415130e+00,6.717782e-01,1.138259e+00,1.002951e+01,2.703550e-01,5.739873e+00,1.406547e+00,3.104280e+01,2.783041e-01,7.075132e+02,2.414473e-01,1.429958e+03,1.395211e-01,-3.568271e+01,-1.794697e+00,1.839275e+03,1.482201e-01,1.036255e+03,3.347320e-01,-4.683152e+01,-1.226352e+00,2.837672e+03,9.110841e-02,1.052301e+03,2.807084e-01,-5.161711e+01,-1.076534e+00,-1.996124e+01,-2.963074e-01,2.964302e+01,2.397756e-01,7.468916e-02,2.169934e-01,-3.844604e-02,-2.844612e-01,3.404177e-01,6.877217e-01,4.499383e+01,2.072440e-01,-6.551383e-02,-2.191212e+02,5.764423e+00,3.167508e+00,-1.430993e+01,-8.506202e-01,-1.034989e+01,1.805410e+01,7.221249e-02,-2.382127e-02,2.827048e-01,4.590164e+00,2.006689e+00,4.216667e-01,4.870118e-01,7.000000e-02,5.059644e-02,-1.938778e+01,?
+unknown,3.445497e+01,5.989173e-02,3.306884e+01,3.389921e+01,3.580817e+01,2.739330e+00,8.241500e+01,1.195640e+02,5.913225e+00,1.320743e+01,8.488116e-01,2.533389e-01,6.662719e-01,8.738081e-01,1.002437e+00,3.361651e-01,6.779277e+00,3.781032e+00,8.917116e+00,3.911702e+00,3.326702e-01,6.811721e-01,4.193222e+01,3.172541e-01,9.693141e-01,1.430235e+01,4.097170e+00,4.313188e+00,-1.288585e+01,-9.307883e-01,1.315202e-02,1.415130e+00,6.717782e-01,1.138259e+00,1.002951e+01,2.703550e-01,5.739873e+00,1.406547e+00,3.104280e+01,2.783041e-01,7.075132e+02,2.414473e-01,1.429958e+03,1.395211e-01,-3.568271e+01,-1.794697e+00,1.839275e+03,1.482201e-01,1.036255e+03,3.347320e-01,-4.683152e+01,-1.226352e+00,2.837672e+03,9.110841e-02,1.052301e+03,2.807084e-01,-5.161711e+01,-1.076534e+00,-1.996124e+01,-2.963074e-01,2.964302e+01,2.397756e-01,7.468916e-02,2.169934e-01,-3.844604e-02,-2.844612e-01,3.404177e-01,6.877217e-01,4.499383e+01,2.072440e-01,-6.551383e-02,-2.191212e+02,5.764423e+00,3.167508e+00,-1.430993e+01,-8.506202e-01,-1.034989e+01,1.805410e+01,7.221249e-02,-2.382127e-02,2.827048e-01,4.590164e+00,2.006689e+00,4.216667e-01,4.870118e-01,7.000000e-02,5.059644e-02,-1.938778e+01,?
+unknown,3.445497e+01,5.989173e-02,3.306884e+01,3.389921e+01,3.580817e+01,2.739330e+00,8.241500e+01,1.195640e+02,5.913225e+00,1.320743e+01,8.488116e-01,2.533389e-01,6.662719e-01,8.738081e-01,1.002437e+00,3.361651e-01,6.779277e+00,3.781032e+00,8.917116e+00,3.911702e+00,3.326702e-01,6.811721e-01,4.193222e+01,3.172541e-01,9.693141e-01,1.430235e+01,4.097170e+00,4.313188e+00,-1.288585e+01,-9.307883e-01,1.315202e-02,1.415130e+00,6.717782e-01,1.138259e+00,1.002951e+01,2.703550e-01,5.739873e+00,1.406547e+00,3.104280e+01,2.783041e-01,7.075132e+02,2.414473e-01,1.429958e+03,1.395211e-01,-3.568271e+01,-1.794697e+00,1.839275e+03,1.482201e-01,1.036255e+03,3.347320e-01,-4.683152e+01,-1.226352e+00,2.837672e+03,9.110841e-02,1.052301e+03,2.807084e-01,-5.161711e+01,-1.076534e+00,-1.996124e+01,-2.963074e-01,2.964302e+01,2.397756e-01,7.468916e-02,2.169934e-01,-3.844604e-02,-2.844612e-01,3.404177e-01,6.877217e-01,4.499383e+01,2.072440e-01,-6.551383e-02,-2.191212e+02,5.764423e+00,3.167508e+00,-1.430993e+01,-8.506202e-01,-1.034989e+01,1.805410e+01,7.221249e-02,-2.382127e-02,2.827048e-01,4.590164e+00,2.006689e+00,4.216667e-01,4.870118e-01,7.000000e-02,5.059644e-02,-1.938778e+01,?
