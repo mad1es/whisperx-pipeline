@@ -130,7 +130,7 @@ def batch_segment_audio(
     transcript_path = Path(transcript_dir)
     output_path = Path(output_base_dir)
     
-    audio_files = list(audio_path.glob('*.wav'))
+    audio_files = list(audio_path.rglob('*.wav'))
     
     if not audio_files:
         print(f"no audio files found in {audio_dir}")

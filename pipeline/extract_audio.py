@@ -52,7 +52,7 @@ def batch_extract_audio(
     
     video_files = []
     for ext in video_extensions:
-        video_files.extend(input_path.glob(f'*{ext}'))
+        video_files.extend(input_path.rglob(f'*{ext}'))
     
     if not video_files:
         print(f"no video files found in {input_dir}")
@@ -62,7 +62,8 @@ def batch_extract_audio(
     
     success_count = 0
     for video_file in tqdm(video_files, desc="extracting audio"):
-        output_file = output_path / f"{video_file.stem}.wav"
+        relative_path = video_file.relative_to(input_path)
+        output_file = output_path / relative_path.with_suffix('.wav')
         
         if extract_audio_from_video(str(video_file), str(output_file)):
             success_count += 1

@@ -167,11 +167,29 @@ def main():
     success = True
     
     if not args.skip_audio:
+        raw_videos_dir = base_dir / 'raw_videos'
+        audio_wav_dir = base_dir / 'audio_wav'
+        
+        video_extensions = ('.mp4', '.avi', '.mov', '.mkv')
+        videos_in_raw = list(raw_videos_dir.rglob('*')) if raw_videos_dir.exists() else []
+        videos_in_raw = [f for f in videos_in_raw if f.suffix.lower() in video_extensions]
+        
+        videos_in_audio = list(audio_wav_dir.rglob('*')) if audio_wav_dir.exists() else []
+        videos_in_audio = [f for f in videos_in_audio if f.suffix.lower() in video_extensions]
+        
+        if videos_in_raw:
+            input_dir = str(raw_videos_dir)
+        elif videos_in_audio:
+            print(f"found videos in {audio_wav_dir}, using as input")
+            input_dir = str(audio_wav_dir)
+        else:
+            input_dir = str(raw_videos_dir)
+        
         success &= run_command(
             [
                 'python', str(pipeline_dir / 'extract_audio.py'),
-                '--input-dir', str(base_dir / 'raw_videos'),
-                '--output-dir', str(base_dir / 'audio_wav')
+                '--input-dir', input_dir,
+                '--output-dir', str(audio_wav_dir)
             ],
             'extracting audio from video'
         )
@@ -214,14 +232,18 @@ def main():
     
     if success and not args.skip_merge:
         metadata_path = base_dir / 'metadata.csv'
+        opensmile_features_path = base_dir / 'features' / 'opensmile_features.csv'
+        
         merge_cmd = [
             'python', str(pipeline_dir / 'merge_features.py'),
             '--segments-metadata', str(base_dir / 'segments' / 'segments_metadata.csv'),
-            '--opensmile-features', str(base_dir / 'features' / 'opensmile_features.csv'),
             '--output', str(base_dir / 'features' / 'merged_features.csv'),
             '--language', args.whisper_language,
             '--aggregate'
         ]
+        
+        if not args.skip_features and opensmile_features_path.exists():
+            merge_cmd.extend(['--opensmile-features', str(opensmile_features_path)])
         
         if metadata_path.exists():
             merge_cmd.extend(['--metadata', str(metadata_path)])
