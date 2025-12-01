@@ -1,9 +1,3 @@
-"""
-Извлечение акустических признаков с помощью openSMILE.
-
-Использует конфигурацию eGeMAPSv02 для извлечения признаков эмоциональной речи.
-"""
-
 import os
 import subprocess
 import argparse
@@ -14,15 +8,6 @@ import numpy as np
 
 
 def find_smilextract_binary(opensmile_dir: str = "opensmile") -> str:
-    """
-    Находит путь к бинарнику SMILExtract.
-    
-    Args:
-        opensmile_dir: Директория с openSMILE
-        
-    Returns:
-        Путь к SMILExtract
-    """
     possible_paths = [
         os.path.join(opensmile_dir, "build", "progsrc", "smilextract", "SMILExtract"),
         os.path.join(opensmile_dir, "build", "bin", "SMILExtract"),
@@ -34,20 +19,11 @@ def find_smilextract_binary(opensmile_dir: str = "opensmile") -> str:
             return os.path.abspath(path)
     
     raise FileNotFoundError(
-        f"SMILExtract не найден. Проверьте пути: {possible_paths}"
+        f"smilextract not found. check paths: {possible_paths}"
     )
 
 
 def find_egemaps_config(opensmile_dir: str = "opensmile") -> str:
-    """
-    Находит путь к конфигурационному файлу eGeMAPSv02.
-    
-    Args:
-        opensmile_dir: Директория с openSMILE
-        
-    Returns:
-        Путь к конфигурационному файлу
-    """
     config_path = os.path.join(
         opensmile_dir,
         "config",
@@ -60,7 +36,7 @@ def find_egemaps_config(opensmile_dir: str = "opensmile") -> str:
         return os.path.abspath(config_path)
     
     raise FileNotFoundError(
-        f"Конфигурационный файл eGeMAPSv02 не найден: {config_path}"
+        f"egemaps config file not found: {config_path}"
     )
 
 
@@ -70,18 +46,6 @@ def extract_features_opensmile(
     smilextract_path: str,
     config_path: str
 ) -> bool:
-    """
-    Извлекает признаки из аудио сегмента с помощью openSMILE.
-    
-    Args:
-        audio_path: Путь к аудио файлу
-        output_path: Путь для сохранения CSV с признаками
-        smilextract_path: Путь к бинарнику SMILExtract
-        config_path: Путь к конфигурационному файлу
-        
-    Returns:
-        True если успешно, False иначе
-    """
     try:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
@@ -105,23 +69,14 @@ def extract_features_opensmile(
         return os.path.exists(output_path)
         
     except subprocess.CalledProcessError as e:
-        print(f"Ошибка при обработке {audio_path}: {e.stderr}")
+        print(f"error processing {audio_path}: {e.stderr}")
         return False
     except Exception as e:
-        print(f"Неожиданная ошибка: {e}")
+        print(f"unexpected error: {e}")
         return False
 
 
 def parse_opensmile_csv(csv_path: str) -> dict:
-    """
-    Парсит ARFF/CSV файл с признаками openSMILE.
-    
-    Args:
-        csv_path: Путь к ARFF/CSV файлу
-        
-    Returns:
-        Словарь с признаками
-    """
     try:
         if not os.path.exists(csv_path):
             return {}
@@ -178,7 +133,7 @@ def parse_opensmile_csv(csv_path: str) -> dict:
         return features
         
     except Exception as e:
-        print(f"Ошибка при парсинге {csv_path}: {e}")
+        print(f"error parsing {csv_path}: {e}")
         return {}
 
 
@@ -187,17 +142,6 @@ def batch_extract_features(
     output_dir: str,
     opensmile_dir: str = "opensmile"
 ) -> pd.DataFrame:
-    """
-    Пакетное извлечение признаков из всех сегментов.
-    
-    Args:
-        segments_dir: Директория с сегментами аудио
-        output_dir: Директория для сохранения признаков
-        opensmile_dir: Директория с openSMILE
-        
-    Returns:
-        DataFrame с признаками всех сегментов
-    """
     segments_path = Path(segments_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -205,14 +149,14 @@ def batch_extract_features(
     smilextract_path = find_smilextract_binary(opensmile_dir)
     config_path = find_egemaps_config(opensmile_dir)
     
-    print(f"Используется SMILExtract: {smilextract_path}")
-    print(f"Используется конфигурация: {config_path}")
+    print(f"using smilextract: {smilextract_path}")
+    print(f"using config: {config_path}")
     
     all_features = []
     
     video_dirs = [d for d in segments_path.iterdir() if d.is_dir()]
     
-    for video_dir in tqdm(video_dirs, desc="Извлечение признаков"):
+    for video_dir in tqdm(video_dirs, desc="extracting features"):
         segment_files = list(video_dir.glob('segment_*.wav'))
         
         for segment_file in segment_files:
@@ -241,11 +185,11 @@ def batch_extract_features(
             new_file_ids = set(features_df['file_id'].unique())
             
             if existing_file_ids & new_file_ids:
-                print(f"Предупреждение: файлы {existing_file_ids & new_file_ids} уже есть в данных. Перезаписываю.")
+                print(f"warning: files {existing_file_ids & new_file_ids} already exist, overwriting")
                 features_df = pd.concat([existing_df[~existing_df['file_id'].isin(new_file_ids)], features_df], ignore_index=True)
             else:
                 features_df = pd.concat([existing_df, features_df], ignore_index=True)
-                print(f"Добавлено {len(new_file_ids)} новых видео к существующим {len(existing_file_ids)}")
+                print(f"added {len(new_file_ids)} new videos to existing {len(existing_file_ids)}")
         
         return features_df
     else:
@@ -256,32 +200,30 @@ def batch_extract_features(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Извлечение акустических признаков с openSMILE'
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         '--segments-dir',
         type=str,
         default='data/segments',
-        help='Директория с сегментами аудио'
+        help='audio segments directory'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
         default='data/features',
-        help='Директория для сохранения признаков'
+        help='features output directory'
     )
     parser.add_argument(
         '--opensmile-dir',
         type=str,
         default='opensmile',
-        help='Директория с openSMILE'
+        help='opensmile directory'
     )
     parser.add_argument(
         '--output-csv',
         type=str,
         default='data/features/opensmile_features.csv',
-        help='Путь для сохранения объединенного CSV'
+        help='output csv path'
     )
     
     args = parser.parse_args()
@@ -295,12 +237,12 @@ def main():
     if not features_df.empty:
         os.makedirs(os.path.dirname(args.output_csv), exist_ok=True)
         features_df.to_csv(args.output_csv, index=False, encoding='utf-8')
-        print(f"\nПризнаки сохранены в {args.output_csv}")
-        print(f"Всего сегментов: {len(features_df)}")
-        print(f"Всего признаков: {len(features_df.columns)}")
-        print(f"Уникальных видео: {features_df['file_id'].nunique()}")
+        print(f"features saved to {args.output_csv}")
+        print(f"total segments: {len(features_df)}")
+        print(f"total features: {len(features_df.columns)}")
+        print(f"unique videos: {features_df['file_id'].nunique()}")
     else:
-        print("Не удалось извлечь признаки")
+        print("failed to extract features")
 
 
 if __name__ == '__main__':

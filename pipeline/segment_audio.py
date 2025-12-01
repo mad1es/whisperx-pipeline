@@ -1,10 +1,3 @@
-"""
-Сегментация аудио на основе транскрипций WhisperX.
-
-Создает сегменты речи длительностью 2-5 секунд, выровненные по сегментам Whisper,
-и сохраняет их как отдельные WAV файлы с соответствующими метаданными.
-"""
-
 import os
 import json
 import argparse
@@ -15,15 +8,6 @@ import pandas as pd
 
 
 def load_whisper_transcript(transcript_path: str) -> dict:
-    """
-    Загружает транскрипцию WhisperX из JSON файла.
-    
-    Args:
-        transcript_path: Путь к JSON файлу с транскрипцией
-        
-    Returns:
-        Словарь с данными транскрипции
-    """
     with open(transcript_path, 'r', encoding='utf-8') as f:
         return json.load(f)
 
@@ -36,20 +20,6 @@ def create_segments_from_transcript(
     max_segment_duration: float = 5.0,
     overlap: float = 0.0
 ) -> pd.DataFrame:
-    """
-    Создает сегменты аудио на основе транскрипции.
-    
-    Args:
-        transcript: Словарь с данными транскрипции WhisperX
-        audio_path: Путь к исходному аудио файлу
-        output_dir: Директория для сохранения сегментов
-        min_segment_duration: Минимальная длительность сегмента (сек)
-        max_segment_duration: Максимальная длительность сегмента (сек)
-        overlap: Перекрытие между сегментами (сек)
-        
-    Returns:
-        DataFrame с метаданными сегментов
-    """
     os.makedirs(output_dir, exist_ok=True)
     
     audio = AudioSegment.from_wav(audio_path)
@@ -58,7 +28,7 @@ def create_segments_from_transcript(
     segments_metadata = []
     
     if 'segments' not in transcript:
-        print(f"Предупреждение: нет сегментов в {audio_path}")
+        print(f"warning: no segments in {audio_path}")
         return pd.DataFrame()
     
     segment_idx = 0
@@ -156,16 +126,6 @@ def batch_segment_audio(
     min_segment_duration: float = 2.0,
     max_segment_duration: float = 5.0
 ) -> None:
-    """
-    Пакетная сегментация всех аудио файлов.
-    
-    Args:
-        audio_dir: Директория с WAV файлами
-        transcript_dir: Директория с JSON транскрипциями
-        output_base_dir: Базовая директория для сохранения сегментов
-        min_segment_duration: Минимальная длительность сегмента
-        max_segment_duration: Максимальная длительность сегмента
-    """
     audio_path = Path(audio_dir)
     transcript_path = Path(transcript_dir)
     output_path = Path(output_base_dir)
@@ -173,16 +133,16 @@ def batch_segment_audio(
     audio_files = list(audio_path.glob('*.wav'))
     
     if not audio_files:
-        print(f"Не найдено аудио файлов в {audio_dir}")
+        print(f"no audio files found in {audio_dir}")
         return
     
     all_segments = []
     
-    for audio_file in tqdm(audio_files, desc="Сегментация"):
+    for audio_file in tqdm(audio_files, desc="segmenting"):
         transcript_file = transcript_path / f"{audio_file.stem}.json"
         
         if not transcript_file.exists():
-            print(f"Пропущен {audio_file.name}: нет транскрипции")
+            print(f"skipped {audio_file.name}: no transcript")
             continue
         
         transcript = load_whisper_transcript(str(transcript_file))
@@ -209,51 +169,49 @@ def batch_segment_audio(
             new_file_ids = set(combined_df['file_id'].unique())
             
             if existing_file_ids & new_file_ids:
-                print(f"Предупреждение: файлы {existing_file_ids & new_file_ids} уже есть в метаданных. Перезаписываю.")
+                print(f"warning: files {existing_file_ids & new_file_ids} already exist in metadata, overwriting")
                 combined_df = pd.concat([existing_df[~existing_df['file_id'].isin(new_file_ids)], combined_df], ignore_index=True)
             else:
                 combined_df = pd.concat([existing_df, combined_df], ignore_index=True)
-                print(f"Добавлено {len(new_file_ids)} новых видео к существующим {len(existing_file_ids)}")
+                print(f"added {len(new_file_ids)} new videos to existing {len(existing_file_ids)}")
         
         combined_df.to_csv(metadata_path, index=False, encoding='utf-8')
-        print(f"\nВсего сегментов: {len(combined_df)}")
-        print(f"Уникальных видео: {combined_df['file_id'].nunique()}")
-        print(f"Метаданные сохранены в {metadata_path}")
+        print(f"total segments: {len(combined_df)}")
+        print(f"unique videos: {combined_df['file_id'].nunique()}")
+        print(f"metadata saved to {metadata_path}")
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Сегментация аудио на основе транскрипций'
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         '--audio-dir',
         type=str,
         default='data/audio_wav',
-        help='Директория с WAV файлами'
+        help='wav files directory'
     )
     parser.add_argument(
         '--transcript-dir',
         type=str,
         default='data/transcripts',
-        help='Директория с JSON транскрипциями'
+        help='json transcripts directory'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
         default='data/segments',
-        help='Директория для сохранения сегментов'
+        help='segments output directory'
     )
     parser.add_argument(
         '--min-duration',
         type=float,
         default=2.0,
-        help='Минимальная длительность сегмента (сек)'
+        help='min segment duration (sec)'
     )
     parser.add_argument(
         '--max-duration',
         type=float,
         default=5.0,
-        help='Максимальная длительность сегмента (сек)'
+        help='max segment duration (sec)'
     )
     
     args = parser.parse_args()

@@ -1,10 +1,3 @@
-"""
-Главный скрипт для запуска полного пайплайна обработки данных.
-
-Автоматически выполняет все этапы обработки от извлечения аудио
-до обучения модели и создания визуализаций.
-"""
-
 import os
 import sys
 import argparse
@@ -15,20 +8,8 @@ from pathlib import Path
 
 
 def run_command(cmd: list, description: str) -> bool:
-    """
-    Выполняет команду и выводит результат.
-    
-    Args:
-        cmd: Список аргументов команды
-        description: Описание выполняемой операции
-        
-    Returns:
-        True если успешно, False иначе
-    """
-    print(f"\n{'='*60}")
-    print(f"Выполняется: {description}")
-    print(f"Команда: {' '.join(cmd)}")
-    print(f"{'='*60}\n")
+    print(f"running: {description}")
+    print(f"command: {' '.join(cmd)}")
     
     try:
         result = subprocess.run(
@@ -36,20 +17,19 @@ def run_command(cmd: list, description: str) -> bool:
             check=True,
             capture_output=False
         )
-        print(f"✓ {description} завершено успешно\n")
+        print(f"{description} completed\n")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"✗ Ошибка при выполнении {description}")
-        print(f"Код возврата: {e.returncode}\n")
+        print(f"error executing {description}")
+        print(f"exit code: {e.returncode}\n")
         return False
     except FileNotFoundError:
-        print(f"✗ Команда не найдена: {cmd[0]}")
-        print("Убедитесь, что все зависимости установлены\n")
+        print(f"command not found: {cmd[0]}")
+        print("ensure all dependencies are installed\n")
         return False
 
 
 def detect_environment():
-    """Определяет тип окружения."""
     is_mac = platform.system() == 'Darwin'
     total_memory_gb = psutil.virtual_memory().total / (1024**3)
     
@@ -57,19 +37,18 @@ def detect_environment():
         return {
             'mode': 'lightweight',
             'default_model': 'medium',
-            'description': 'MacBook / ограниченная память'
+            'description': 'lightweight mode'
         }
     else:
         return {
             'mode': 'server',
             'default_model': 'medium',
-            'description': 'Сервер / мощный компьютер'
+            'description': 'server mode'
         }
 
 
 def check_dependencies() -> bool:
-    """Проверяет наличие необходимых зависимостей."""
-    print("Проверка зависимостей...")
+    print("checking dependencies...")
     
     dependencies = {
         'python': ['python', '--version'],
@@ -84,79 +63,77 @@ def check_dependencies() -> bool:
                 capture_output=True,
                 check=True
             )
-            print(f"✓ {name} найден")
+            print(f"{name} found")
         except (subprocess.CalledProcessError, FileNotFoundError):
-            print(f"✗ {name} не найден")
+            print(f"{name} not found")
             all_ok = False
     
     return all_ok
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Запуск полного пайплайна обработки данных'
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         '--skip-audio',
         action='store_true',
-        help='Пропустить извлечение аудио'
+        help='skip audio extraction'
     )
     parser.add_argument(
         '--skip-transcription',
         action='store_true',
-        help='Пропустить транскрипцию'
+        help='skip transcription'
     )
     parser.add_argument(
         '--skip-segmentation',
         action='store_true',
-        help='Пропустить сегментацию'
+        help='skip segmentation'
     )
     parser.add_argument(
         '--skip-features',
         action='store_true',
-        help='Пропустить извлечение признаков'
+        help='skip feature extraction'
     )
     parser.add_argument(
         '--skip-merge',
         action='store_true',
-        help='Пропустить объединение признаков'
+        help='skip feature merging'
     )
     parser.add_argument(
         '--skip-training',
         action='store_true',
-        help='Пропустить обучение модели'
+        help='skip model training'
     )
     parser.add_argument(
         '--data-dir',
         type=str,
         default='data',
-        help='Базовая директория с данными'
+        help='data directory'
     )
     parser.add_argument(
         '--whisper-model',
         type=str,
         default=None,
-        help='Модель Whisper для транскрипции (None = автоопределение по окружению)'
+        help='whisper model for transcription (none = auto-detect)'
     )
     parser.add_argument(
         '--mode',
         type=str,
         default=None,
         choices=['lightweight', 'server'],
-        help='Режим работы: lightweight (MacBook) или server (мощный сервер). None = автоопределение'
+        help='mode: lightweight or server (none = auto-detect)'
     )
     parser.add_argument(
         '--whisper-language',
         type=str,
         default='ru',
-        help='Язык для транскрипции'
+        help='transcription language'
     )
     parser.add_argument(
         '--whisper-device',
         type=str,
         default='cpu',
         choices=['cpu', 'cuda'],
-        help='Устройство для Whisper'
+        help='whisper device'
     )
     
     args = parser.parse_args()
@@ -174,16 +151,12 @@ def main():
     if args.whisper_model is None:
         args.whisper_model = env['default_model']
     
-    print("="*60)
-    print("МУЛЬТИМОДАЛЬНЫЙ ПАЙПЛАЙН ОБРАБОТКИ ДАННЫХ")
-    print("="*60)
-    print(f"Окружение: {env['description']}")
-    print(f"Режим: {env['mode']}")
-    print(f"Модель Whisper: {args.whisper_model}")
-    print("="*60)
+    print(f"environment: {env['description']}")
+    print(f"mode: {env['mode']}")
+    print(f"whisper model: {args.whisper_model}")
     
     if not check_dependencies():
-        print("\n⚠ Некоторые зависимости не найдены. Продолжить? (y/n)")
+        print("some dependencies not found. continue? (y/n)")
         response = input().lower()
         if response != 'y':
             sys.exit(1)
@@ -200,7 +173,7 @@ def main():
                 '--input-dir', str(base_dir / 'raw_videos'),
                 '--output-dir', str(base_dir / 'audio_wav')
             ],
-            'Извлечение аудио из видео'
+            'extracting audio from video'
         )
     
     if success and not args.skip_transcription:
@@ -215,7 +188,7 @@ def main():
         if args.mode:
             transcribe_cmd.extend(['--mode', args.mode])
         
-        success &= run_command(transcribe_cmd, 'Транскрипция аудио')
+        success &= run_command(transcribe_cmd, 'transcribing audio')
     
     if success and not args.skip_segmentation:
         success &= run_command(
@@ -225,7 +198,7 @@ def main():
                 '--transcript-dir', str(base_dir / 'transcripts'),
                 '--output-dir', str(base_dir / 'segments')
             ],
-            'Сегментация аудио'
+            'segmenting audio'
         )
     
     if success and not args.skip_features:
@@ -236,7 +209,7 @@ def main():
                 '--output-dir', str(base_dir / 'features'),
                 '--output-csv', str(base_dir / 'features' / 'opensmile_features.csv')
             ],
-            'Извлечение признаков openSMILE'
+            'extracting opensmile features'
         )
     
     if success and not args.skip_merge:
@@ -255,7 +228,7 @@ def main():
         
         success &= run_command(
             merge_cmd,
-            'Объединение признаков'
+            'merging features'
         )
     
     if success and not args.skip_training:
@@ -268,22 +241,18 @@ def main():
                     '--model-type', 'logistic',
                     '--n-splits', '5'
                 ],
-                'Обучение базовой модели'
+                'training baseline model'
             )
         else:
-            print(f"⚠ Файл {merged_features} не найден. Пропуск обучения.")
+            print(f"file {merged_features} not found, skipping training")
     
-    print("\n" + "="*60)
     if success:
-        print("✓ ПАЙПЛАЙН ЗАВЕРШЕН УСПЕШНО")
-        print("="*60)
-        print("\nСледующие шаги:")
-        print("1. Проверьте результаты в data/features/merged_features.csv")
-        print("2. Запустите визуализацию: streamlit run visualization_app/app.py")
+        print("pipeline success")
+        print("check results in data/features/merged_features.csv")
+        print("run visualization: streamlit run visualization_app/app.py")
     else:
-        print("✗ ПАЙПЛАЙН ЗАВЕРШЕН С ОШИБКАМИ")
-        print("="*60)
-        print("\nПроверьте логи выше для деталей.")
+        print("pipeline failed")
+        print("check logs above for details")
         sys.exit(1)
 
 

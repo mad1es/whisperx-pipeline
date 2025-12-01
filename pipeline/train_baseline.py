@@ -1,10 +1,3 @@
-"""
-Базовая ML модель для классификации суицидального риска.
-
-Использует объединенные мультимодальные признаки для обучения
-классификатора и оценки важности признаков.
-"""
-
 import os
 import argparse
 import pandas as pd
@@ -32,19 +25,10 @@ import seaborn as sns
 
 
 def load_data(data_path: str) -> tuple:
-    """
-    Загружает данные и разделяет на признаки и метки.
-    
-    Args:
-        data_path: Путь к CSV файлу с данными
-        
-    Returns:
-        Кортеж (X, y, groups, feature_names)
-    """
     df = pd.read_csv(data_path)
     
     if 'label' not in df.columns:
-        raise ValueError("В данных отсутствует колонка 'label'")
+        raise ValueError("label column missing in data")
     
     exclude_cols = ['file_id', 'segment_id', 'label', 'text', 'segment_path', 'start', 'end']
     feature_cols = [col for col in df.columns if col not in exclude_cols]
@@ -64,20 +48,6 @@ def train_baseline_model(
     n_splits: int = 5,
     random_state: int = 42
 ) -> dict:
-    """
-    Обучает базовую модель с групповой стратифицированной кросс-валидацией.
-    
-    Args:
-        X: Признаки
-        y: Метки
-        groups: Группы для стратификации (file_id)
-        model_type: Тип модели ('logistic', 'rf', 'gbm')
-        n_splits: Количество фолдов для CV
-        random_state: Random state для воспроизводимости
-        
-    Returns:
-        Словарь с результатами обучения
-    """
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     
@@ -104,7 +74,7 @@ def train_baseline_model(
             random_state=random_state
         )
     else:
-        raise ValueError(f"Неизвестный тип модели: {model_type}")
+        raise ValueError(f"unknown model type: {model_type}")
     
     cv = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
     
@@ -145,17 +115,6 @@ def train_baseline_model(
 
 
 def find_optimal_threshold(y_true: np.ndarray, y_pred_proba: np.ndarray, target_precision: float = 0.9) -> float:
-    """
-    Находит оптимальный порог для заданной точности.
-    
-    Args:
-        y_true: Истинные метки
-        y_pred_proba: Предсказанные вероятности
-        target_precision: Целевая точность
-        
-    Returns:
-        Оптимальный порог
-    """
     precision, recall, thresholds = precision_recall_curve(y_true, y_pred_proba)
     
     optimal_threshold = 0.5
@@ -171,13 +130,6 @@ def find_optimal_threshold(y_true: np.ndarray, y_pred_proba: np.ndarray, target_
 
 
 def plot_results(results: dict, output_dir: str = 'data/results') -> None:
-    """
-    Создает графики результатов обучения.
-    
-    Args:
-        results: Словарь с результатами обучения
-        output_dir: Директория для сохранения графиков
-    """
     os.makedirs(output_dir, exist_ok=True)
     
     y_true = results['y_true']
@@ -226,17 +178,6 @@ def plot_results(results: dict, output_dir: str = 'data/results') -> None:
 
 
 def get_feature_importance(model, feature_names: list, top_n: int = 20) -> pd.DataFrame:
-    """
-    Получает важность признаков из модели.
-    
-    Args:
-        model: Обученная модель
-        feature_names: Список названий признаков
-        top_n: Количество топ признаков
-        
-    Returns:
-        DataFrame с важностью признаков
-    """
     if hasattr(model, 'feature_importances_'):
         importances = model.feature_importances_
     elif hasattr(model, 'coef_'):
@@ -253,65 +194,63 @@ def get_feature_importance(model, feature_names: list, top_n: int = 20) -> pd.Da
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Обучение базовой ML модели'
-    )
+    parser = argparse.ArgumentParser()
     parser.add_argument(
         '--data',
         type=str,
         default='data/features/merged_features.csv',
-        help='Путь к объединенному датасету'
+        help='merged dataset path'
     )
     parser.add_argument(
         '--model-type',
         type=str,
         default='logistic',
         choices=['logistic', 'rf', 'gbm'],
-        help='Тип модели'
+        help='model type'
     )
     parser.add_argument(
         '--n-splits',
         type=int,
         default=5,
-        help='Количество фолдов для CV'
+        help='cv folds count'
     )
     parser.add_argument(
         '--output-dir',
         type=str,
         default='data/models',
-        help='Директория для сохранения модели'
+        help='model output directory'
     )
     parser.add_argument(
         '--results-dir',
         type=str,
         default='data/results',
-        help='Директория для сохранения результатов'
+        help='results output directory'
     )
     
     args = parser.parse_args()
     
-    print("Загрузка данных...")
+    print("loading data...")
     X, y, groups, feature_names = load_data(args.data)
     
-    print(f"Размер данных: {X.shape}")
-    print(f"Классы: {np.bincount(y)}")
+    print(f"data shape: {X.shape}")
+    print(f"classes: {np.bincount(y)}")
     
-    print(f"\nОбучение модели ({args.model_type})...")
+    print(f"training model ({args.model_type})...")
     results = train_baseline_model(
         X, y, groups,
         model_type=args.model_type,
         n_splits=args.n_splits
     )
     
-    print(f"\nРезультаты кросс-валидации:")
-    print(f"ROC-AUC: {results['cv_roc_auc_mean']:.4f} ± {results['cv_roc_auc_std']:.4f}")
-    print(f"PR-AUC: {results['cv_pr_auc_mean']:.4f} ± {results['cv_pr_auc_std']:.4f}")
+    print(f"cross-validation results:")
+    print(f"roc-auc: {results['cv_roc_auc_mean']:.4f} ± {results['cv_roc_auc_std']:.4f}")
+    print(f"pr-auc: {results['cv_pr_auc_mean']:.4f} ± {results['cv_pr_auc_std']:.4f}")
     
     optimal_threshold = find_optimal_threshold(results['y_true'], results['y_pred_proba'])
     y_pred_optimal = (results['y_pred_proba'] >= optimal_threshold).astype(int)
     
-    print(f"\nОптимальный порог (Precision >= 0.9): {optimal_threshold:.4f}")
-    print(f"\nКлассификационный отчет:")
+    print(f"optimal threshold (precision >= 0.9): {optimal_threshold:.4f}")
+    print(f"classification report:")
     print(classification_report(results['y_true'], y_pred_optimal))
     
     os.makedirs(args.output_dir, exist_ok=True)
@@ -322,17 +261,17 @@ def main():
         'feature_names': feature_names,
         'threshold': optimal_threshold
     }, model_path)
-    print(f"\nМодель сохранена в {model_path}")
+    print(f"model saved to {model_path}")
     
     importance_df = get_feature_importance(results['model'], feature_names)
     if not importance_df.empty:
         importance_path = os.path.join(args.results_dir, 'feature_importance.csv')
         os.makedirs(args.results_dir, exist_ok=True)
         importance_df.to_csv(importance_path, index=False)
-        print(f"Важность признаков сохранена в {importance_path}")
+        print(f"feature importance saved to {importance_path}")
     
     plot_results(results, args.results_dir)
-    print(f"\nГрафики сохранены в {args.results_dir}")
+    print(f"plots saved to {args.results_dir}")
 
 
 if __name__ == '__main__':
